@@ -70,11 +70,11 @@ public class TokenBucket {
 
     private double getAdaptiveRefillRate() {
         double cpu = currentCpuLoad;
-        if (isCpuSpiking()) {
-            return refillRate * 0.4;
-        }
         if (cpu > 0.8) {
             return refillRate * 0.3;
+        }
+        if (isCpuSpiking()) {
+            return refillRate * 0.4;
         }
         if (cpu > 0.6) {
             return refillRate * 0.5;

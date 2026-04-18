@@ -10,6 +10,13 @@ When I was calling an Azure API to fetch all the subscriptions and its cost, I w
 - Now, if it is not, then maybe we get some cpu usage value which gradually make it worse and cpu spikes up, then we adjust the refill rate as per spike, whether is more than 80%, 60% or 40%, between 40 and 60, it is normal spike rate but still we optimise refill rate more to get better request handling. Above 80% is a risky zone, because then we need to scale the instance or use load balancer for better traffic distribution.
 - The next thing is how we are ordering between predictive and reactive throttling, since more than 80% spike is dangerous, we need to consider reactive first, then predictive and then we can use reactive for 40% or 60% spike because that is not causing much trouble in the upcoming go.
 
+# Next Upgrade (Upcoming)
+- We need to have a latency based throttling where we take a start time and simulate DB/API delay, in case of testing, we can just generate a random sleep time, then process whole request in the time and then calculate latency between the current time and time before execution of request processing and then record that latency.
+- Record latency is same as that done in case of CPU where we are just adding net latency to the last of the deque and maximum size taken for that deque is defined and we poll the first value of latency deque whenever deque gets filled.
+- Now, we have whole set of latency history which we utilise to calculate average latency value.
+- The average latency of more than 200ms could lead to frequent glitches affecting user experience, so we will try to adjust refill rate to minimise latency, similarly we also do the same for average latency more than 120ms or more than even 100ms because it could lead to noticeable lags in gaming and audio overlaps.
+- The exceptional range is around 0-20ms, which is ideal for professional gaming and high-frequency algorithmic trading, and for our websites, apps and softwares, around 20-100ms is decent to be used for casual browsing, chatting, video calling, etc.
+
 # Reference
 System Design Interview Part-1 | By Alex Xu (Chapter-4)
 
